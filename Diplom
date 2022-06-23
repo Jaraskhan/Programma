@@ -1,0 +1,810 @@
+from tkinter.ttk import Progressbar
+from tkinter import *
+from tkinter import ttk
+from tkinter import filedialog
+from tkinter import messagebox
+from tkhtmlview import HTMLLabel
+from tkinter import font
+import cv2
+import numpy as np
+from matplotlib import image, pyplot as plt, style
+
+w = Tk()
+
+width_of_window=427
+height_of_window=250
+screen_width=w.winfo_screenwidth()
+screen_height=w.winfo_screenheight()
+x_coordinate = (screen_width/2)-(width_of_window/2)
+y_coordinate = (screen_height/2)-(height_of_window/2)
+w.geometry("%dx%d+%d+%d"%(width_of_window, height_of_window,x_coordinate,y_coordinate))
+w.overrideredirect(1)
+
+s=ttk.Style()
+s.theme_use('clam')
+s.configure("red.Horizontal.TProgressbar",foreground='red',background='green')
+progress=Progressbar(w,style="red.Horizontal.TProgressbar",orient=HORIZONTAL,length=500,mode='determinate')
+
+def main_window():
+
+    def on_closing():
+        if messagebox.askokcancel("Выход из приложения", "Хотите выйти из приложения?"):
+            tk.destroy()
+
+    tk=Tk()
+    tk.title("Бұрыш детекторлары")
+    tk.protocol("WM_DELETE_WINDOW", on_closing)
+    tk.geometry('600x400')
+    tk.resizable(False,False)
+    
+    def next1():
+        import time
+        for i in range(100):
+            time.sleep(0)
+        tk.destroy()
+        main_window1()
+    
+    def next2():
+        import time
+        for i in range(100):
+            time.sleep(0)
+        tk.destroy()
+        main_window2()
+    
+    def next3():
+        import time
+        for i in range(100):
+            time.sleep(0)
+        tk.destroy()
+        main_window3()
+
+    label = Label(tk, text = "Бұрыштарды анықтау және маскалармен жұмыс істеу", font = ("Times New Roman", 16, "bold"))
+    label.place(x=60, y=40)
+    
+    btn1 = Button(tk,text ="Харрис Детекторы", activebackground="#555", border=6, bg = "green", fg = "white", font=("Times New Roman", 12, "bold"), command=next1)
+    btn1.place(x=150, y=100, width=280, height=50)
+    btn2 = Button(text ="Shi-Tomasi Детекторы", activebackground="#555", border=6, bg = "yellow", fg = "black", font=("Times New Roman", 11, "bold"), command=next2)
+    btn2.place(x=150, y=160, width=280, height=50)
+    btn3 = Button(text ="Маскалармен жұмыс", activebackground="#555", border=6, bg = "red", fg = "white", font=("Times New Roman", 12,"bold"), command=next3)
+    btn3.place(x=150, y=220, width=280, height=50)
+
+
+def main_window1():
+    
+    def on_closing1():
+        if messagebox.askokcancel("Выход из приложения", "Хотите выйти из приложения?"):
+            root.destroy()
+
+    root=Tk()
+    root.title("Харрис детекторы")
+    root.protocol("WM_DELETE_WINDOW", on_closing1)
+    root.geometry('700x600')
+    root.resizable(False,False)
+
+    my_label = HTMLLabel(root, html = """
+    <h1>Харрис Детекторы</h1>
+    <p1>Harris Corner Detector-бұл бұрыштарды анықтау операторы , негізі компьютерлік көру алгоритмдерінде бұрыштар және кескін белгілерін көрсету үшін жиі қолданылады. 
+    Оны алғаш рет Крис Харрис пен Майкл Стивенс 1988 жылы Моравектің бұрыштық детекторын жетілдіргеннен кейін енгізген . 
+    Моравек детекторына қарағанда, Харрис бұрыш детекторы әр 45 градус бұрыш үшін ығыстырылған участкілерді қолданудың орнына, бұрыштық рейтингтердің бағытын тікелей ескереді 
+    және жиектер мен бұрыштарды ажыратуда дәлірек екендігі дәлелденді. Содан бері ол жетілдіріліп, кейінгі қосымшалар үшін кескінді алдын-ала өңдеудің көптеген алгоритмдеріне қабылданды.</p1>
+    <ul>
+    <li><a href="https://wiki5.ru/wiki/Harris_Corner_Detector">Қосымша мәліметке сілтеме</a></li>
+    <li><a href="https://www.youtube.com/watch?v=KuFU42Wlc68&t=131s">Харрис детекторы бойынша дәріс</a></li>
+    </ul>
+    """)
+    my_label.place(x=50, y=30, width=600, height=500)
+
+    lbl = Label(root, text="Кескінді таңдаңыз", font=("Times New Roman", 14, "bold"))
+    lbl.place(x=340, y=490)
+
+    btn6 = Button(root, text ="Таңдау", activebackground="#555", border=6, bg = "yellow", font=("Times New Roman", 14), command=button_press)
+    btn6.place(x=350, y=530, width=150, height=50)
+
+    def exit1():
+        import time
+        for i in range(100):
+            time.sleep(0)
+        root.destroy()
+        main_window()
+
+    def bttn1(x,y,text,bcolor,fcolor):
+        
+        def on_enter(e):
+            btn4['background'] =bcolor
+            btn4['foreground'] =fcolor
+
+        def on_leave(e):
+            btn4['background'] =fcolor
+            btn4['foreground'] =bcolor
+            
+        btn4 = Button(root, width=12, height=1, text=text, border=0, fg=bcolor, bg=fcolor, activebackground=bcolor, activeforeground=fcolor, command=exit1)
+        btn4.bind("<Enter>", on_enter)
+        btn4.bind("<Leave>", on_leave)
+        btn4.place(x=x, y=y)
+
+    bttn1(0,0,"Артқа",'white', "#141414")
+
+def main_window2():
+    
+    def on_closing2():
+        if messagebox.askokcancel("Выход из приложения", "Хотите выйти из приложения?"):
+            q.destroy()
+
+    q=Tk()
+    q.title("Shi-Tomasi детекторы")
+    q.protocol("WM_DELETE_WINDOW", on_closing2)
+    q.geometry('700x600')
+    q.resizable(False,False)
+
+    my_label = HTMLLabel(q, html = """
+    <h1>Shi-Tomasi Детекторы</h1>
+    <p1>Ши-Томаси бұрыштық детекторы (Ши-Томаси немесе Канаде-Томаси, 1993) Харрис детекторымен бірдей, 
+    бірақ жауап өлшемін есептеуде әр түрлі болады: алгоритм мәнді тікелей есептейді , өйткені бұрыштарды 
+    іздеу тұрақты болады деген болжам жасалады. Авторлар Лукас пен Канаде (Lucas and Canadе) оптикалық ағынын 
+    талдау үшін бірдей теңдеуді қолданады.</p1>
+    <ul>
+    <li><a href="https://www.codetd.com/ru/article/7829792">Толық ақпарат алу үшін сілтеме</a></li>
+    </ul>
+    """)
+    my_label.place(x=50,y=30, width=600, height=500)
+
+    lbl = Label(q, text="Кескінді таңдаңыз", font=("Times New Roman", 14, "bold"))
+    lbl.place(x=300, y=460)
+    
+    btn8 = Button(q, text ="Таңдау", activebackground="#555", border=6, bg = "lime", font=("Times New Roman", 14), command=button_press1)
+    btn8.place(x=310, y=500, width=150, height=50)
+    
+    def exit2():
+        import time
+        for i in range(100):
+            time.sleep(0)
+        q.destroy()
+        main_window()
+
+    def bttn2(x,y,text,bcolor,fcolor):
+        def on_enter(e):
+            btn5['background'] =bcolor
+            btn5['foreground'] =fcolor
+
+        def on_leave(e):
+            btn5['background'] =fcolor
+            btn5['foreground'] =bcolor
+            
+        btn5 = Button(q, width=12, height=1, text=text, border=0, fg=bcolor, bg=fcolor, activebackground=bcolor, activeforeground=fcolor, command=exit2)
+        btn5.bind("<Enter>", on_enter)
+        btn5.bind("<Leave>", on_leave)
+        btn5.place(x=x, y=y)
+
+    bttn2(0,0,"Артқа",'white', "#141414")
+
+def main_window3():
+
+    def on_closing3():
+        if messagebox.askokcancel("Выход из приложения", "Хотите выйти из приложения?"):
+            g.destroy()
+
+    def next4():
+        import time
+        for i in range(100):
+            time.sleep(0)
+        g.destroy()
+        main_window4()
+
+    g=Tk()
+    g.title("Маскалармен жұмыс істеу")
+    g.protocol("WM_DELETE_WINDOW", on_closing3)
+    g.geometry('700x700')
+    g.resizable(False,False)
+    
+    my_label = HTMLLabel(g, html = """
+    <h1>Маскалар туралы түсінік</h1>
+    <p1>Бұрыштарды іздеудің кең таралған тәсілдерінің бірі-шекараларды бөлу және бинаризация және кескіннің екілік аналогында кейінгі анықтау процедуралары. Негізінде
+    екінші туынды нөлге тең болу үшін нүктенің төңірегіндегі кескіннің жарықтығын зерттеу және белгінің қалыпты шекараға қарай өзгеру әдісі жатыр. Көптеген градиенттер белгілі
+    бұл әдіс үшін ұсынылған маскалар. Шекараға қалыпты бір өлшемді жарықтылық кескін профилі әртүрлі болуы мүмкін, әдетте мұндай түрлер ерекшеленеді:
+    импульс, баспалдақ, пандус және шатыр. Өйткені жылжымалы дифференциалдау қозғалысы
+    терезелер мен оның жинақталуын жергілікті кескін фрагментімен есептеу автоматты түрде жүреді, қысқа мерзімде көрінетін импульсті шуылға байланысты проблемалар туындайды
+    жалған контурлар ұзындығы бір пиксель бірліктері. Тиімді жылдам Алгоритмдер белгілі
+    дифференциалдық жинақтауды реттеу, мысалы, екі өлшемді қосымша жинақтау
+    параметрлері өзгеруі мүмкін Гаусс функциясы.</p1>
+    <ul>
+    <li><a href="https://medium.com/nuances-of-programming/10-%D0%B8%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D0%B2-python-%D0%B4%D0%BB%D1%8F-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%8B-%D1%81-%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F%D0%BC%D0%B8-1478612e7ade">Толық ақпарат алу үшін сілтеме</a></li>
+    </ul>
+    """)
+    my_label.place(x=50, y=30, width=600, height=600)
+    
+    btn10 = Button(g, text ="Таңдау", activebackground="#555", border=6, bg = "lime", font=("Times New Roman", 12), command=next4)
+    btn10.place(x=200, y=600, width=150, height=50)
+    btn11 = Button(g, text ="Таңдау", activebackground="#555", border=6, bg = "blue", fg = "white", font=("Times New Roman", 12), command=button_press4)
+    btn11.place(x=400, y=600, width=150, height=50)
+    
+    def exit3():
+        import time
+        for i in range(100):
+            time.sleep(0)
+        g.destroy()
+        main_window()
+        
+    def bttn3(x,y,text,bcolor,fcolor):
+        def on_enter(e):
+            btn7['background'] =bcolor
+            btn7['foreground'] =fcolor
+
+        def on_leave(e):
+            btn7['background'] =fcolor
+            btn7['foreground'] =bcolor
+            
+        btn7 = Button(g, width=12, height=1, text=text, border=0, fg=bcolor, bg=fcolor, activebackground=bcolor, activeforeground=fcolor, command=exit3)
+        btn7.bind("<Enter>", on_enter)
+        btn7.bind("<Leave>", on_leave)
+        btn7.place(x=x, y=y)
+
+    bttn3(0,0,"Артқа",'white', "#141414")
+
+
+def main_window4():
+
+    def on_closing4():
+        if messagebox.askokcancel("Выход из приложения", "Хотите выйти из приложения?"):
+            b.destroy()
+    
+    greed3 = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+    greed4 = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+
+    b = Tk()
+    b.title("Мәліметтер")
+    b.geometry("800x600")
+    b.protocol("WM_DELETE_WINDOW", on_closing4)
+    b.resizable(False,False)
+
+
+    data = IntVar(b)
+    data1 = IntVar(b)
+    data2 = IntVar(b)
+    data3 = IntVar(b)
+    data4 = IntVar(b)
+    data5 = IntVar(b)
+    data6 = IntVar(b)
+    data7 = IntVar(b)
+    data8 = IntVar(b)
+    data9 = IntVar(b)
+    data10 = IntVar(b)
+
+    combo3 = ttk.Combobox(b, textvariable=data9,  values=greed3, width=6)
+    combo3.place(x=50, y=70)
+    combo3.configure(state=DISABLED)
+    def on_click(event):
+        combo3.configure(state=NORMAL)
+        combo3.delete(0, END)
+    combo3.bind("<Button-1>", on_click)
+
+    combo4 = ttk.Combobox(b, textvariable=data10,  values=greed4, width=6)
+    combo4.place(x=150, y=70)
+    combo4.configure(state=DISABLED)
+    def on_click(event):
+        combo4.configure(state=NORMAL)
+        combo4.delete(0, END)
+    combo4.bind("<Button-1>", on_click)
+
+    def button_press3():
+        if data7.get() == 1:
+            if data.get():
+                if data1.get():
+                    if data2.get():
+                        if data3.get():
+                            if data9.get():
+                                if data10.get():
+                                    if data8.get() == 1:
+                                        file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                        photo = cv2.imread(file_path)
+                                        if file_path:
+                                            photo = cv2.resize(photo, (data9.get(), data10.get()))
+                                            cv2.imshow('Window 1', photo)
+                                            img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                            square = cv2.rectangle(img.copy(), (data.get(), data1.get()), (data2.get(), data3.get()), 255, -1)
+                                            img= cv2.bitwise_and(photo, photo, mask = square)
+                                            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                                            gray = np.float32(gray)
+                                            dst = cv2.cornerHarris(gray, 5, 5, 0.08)
+                                            dst = cv2.dilate(dst, None)
+                                            img[dst > 0.01 * dst.max()] = [0, 0, 255]
+                                            cv2.imshow('Window 2', img)
+                                            if cv2.waitKey(0) & 0xff == 27:
+                                                cv2.destroyAllWindows()
+
+                                    elif data8.get() == 2:
+                                        file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                        photo = cv2.imread(file_path)
+                                        if file_path:
+                                            photo = cv2.resize(photo, (data9.get(), data10.get()))
+                                            cv2.imshow('Window 1', photo)
+                                            img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                            square = cv2.rectangle(img.copy(), (data.get(), data1.get()), (data2.get(), data3.get()), 255, -1)
+                                            img= cv2.bitwise_and(photo, photo, mask = square)
+                                            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                                            corners = cv2.goodFeaturesToTrack(gray, 100, 0.01, 10)
+                                            corners = np.int0(corners)
+                                            for corner in corners:
+                                                x, y = corner.ravel()
+                                                cv2.circle(img, (x, y), 5, (255, 0, 0), -1)
+                                            cv2.imshow('Window 2', img)
+                                            cv2.waitKey(0)
+                                            cv2.destroyAllWindows()
+                                    else:
+                                        file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                        photo = cv2.imread(file_path)
+                                        if file_path:
+                                            photo = cv2.resize(photo, (data9.get(), data10.get()))
+                                            cv2.imshow('Window 1', photo)
+                                            img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                            square = cv2.rectangle(img.copy(), (data.get(), data1.get()), (data2.get(), data3.get()), 255, -1)
+                                            img= cv2.bitwise_and(photo, photo, mask = square)
+                                            cv2.imshow('Window 2', img)
+                                            if cv2.waitKey(0) & 0xff == 27:
+                                                cv2.destroyAllWindows()
+                            else:
+                                if data8.get() == 1:
+                                    file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                    photo = cv2.imread(file_path)
+                                    if file_path:
+                                        cv2.imshow('Window 1', photo)
+                                        img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                        square = cv2.rectangle(img.copy(), (data.get(), data1.get()), (data2.get(), data3.get()), 255, -1)
+                                        img= cv2.bitwise_and(photo, photo, mask = square)
+                                        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                                        gray = np.float32(gray)
+                                        dst = cv2.cornerHarris(gray, 5, 5, 0.08)
+                                        dst = cv2.dilate(dst, None)
+                                        img[dst > 0.01 * dst.max()] = [0, 0, 255]
+                                        cv2.imshow('Window 2', img)
+                                        if cv2.waitKey(0) & 0xff == 27:
+                                            cv2.destroyAllWindows()
+
+                                elif data8.get() == 2:
+                                    file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                    photo = cv2.imread(file_path)
+                                    if file_path:
+                                        cv2.imshow('Window 1', photo)
+                                        img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                        square = cv2.rectangle(img.copy(), (data.get(), data1.get()), (data2.get(), data3.get()), 255, -1)
+                                        img= cv2.bitwise_and(photo, photo, mask = square)
+                                        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                                        corners = cv2.goodFeaturesToTrack(gray, 100, 0.01, 10)
+                                        corners = np.int0(corners)
+                                        for corner in corners:
+                                            x, y = corner.ravel()
+                                            cv2.circle(img, (x, y), 5, (255, 0, 0), -1)
+                                        cv2.imshow('Window 2', img)
+                                        cv2.waitKey(0)
+                                        cv2.destroyAllWindows()
+                                else:
+                                    file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                    photo = cv2.imread(file_path)
+                                    if file_path:
+                                        cv2.imshow('Window 1', photo)
+                                        img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                        square = cv2.rectangle(img.copy(), (data.get(), data1.get()), (data2.get(), data3.get()), 255, -1)
+                                        img= cv2.bitwise_and(photo, photo, mask = square)
+                                        cv2.imshow('Window 2', img)
+                                        if cv2.waitKey(0) & 0xff == 27:
+                                            cv2.destroyAllWindows()
+                        else:
+                            messagebox.showerror("Қате", "Мәліметтерді толық енгізіңіз!")
+                    else:
+                        messagebox.showerror("Қате", "Мәліметтерді толық енгізіңіз!")
+                else:
+                    messagebox.showerror("Қате", "Мәліметтерді толық енгізіңіз!")
+            else:
+                messagebox.showerror("Қате", "Мәліметтерді дұрыс енгізіңіз!")
+
+        elif data7.get() == 2:
+            if data4.get():
+                if data5.get():
+                    if data6.get():
+                        if data9.get():
+                            if data10.get():
+                                if data8.get() == 1:
+                                    file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                    photo = cv2.imread(file_path)
+                                    if file_path:
+                                        photo = cv2.resize(photo, (data9.get(), data10.get()))
+                                        cv2.imshow('Window 1', photo)
+                                        img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                        circle = cv2.circle(img.copy(), (data4.get(), data5.get()), data6.get(), 255, -1)
+                                        img= cv2.bitwise_and(photo, photo, mask = circle)
+                                        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                                        gray = np.float32(gray)
+                                        dst = cv2.cornerHarris(gray, 5, 5, 0.08)
+                                        dst = cv2.dilate(dst, None)
+                                        img[dst > 0.01 * dst.max()] = [0, 0, 255]
+                                        cv2.imshow('Window 2', img)
+                                        if cv2.waitKey(0) & 0xff == 27:
+                                            cv2.destroyAllWindows()
+                                elif data8.get() == 2:
+                                    file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                    photo = cv2.imread(file_path)
+                                    if file_path:
+                                        photo = cv2.resize(photo, (data9.get(), data10.get()))
+                                        cv2.imshow('Window 1', photo)
+                                        img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                        circle = cv2.circle(img.copy(), (data4.get(), data5.get()), data6.get(), 255, -1)
+                                        img= cv2.bitwise_and(photo, photo, mask = circle)
+                                        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                                        corners = cv2.goodFeaturesToTrack(gray, 100, 0.01, 10)
+                                        corners = np.int0(corners)
+                                        for corner in corners:
+                                            x, y = corner.ravel()
+                                            cv2.circle(img, (x, y), 5, (255, 0, 0), -1)
+                                        cv2.imshow('Window 2', img)
+                                        if cv2.waitKey(0) & 0xff == 27:
+                                            cv2.destroyAllWindows()
+                                else:
+                                    file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                    photo = cv2.imread(file_path)
+                                    if file_path:
+                                        photo = cv2.resize(photo, (data9.get(), data10.get()))
+                                        cv2.imshow('Window 1', photo)
+                                        img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                        circle = cv2.circle(img.copy(), (data4.get(), data5.get()), data6.get(), 255, -1)
+                                        img= cv2.bitwise_and(photo, photo, mask = circle)
+                                        cv2.imshow('Window 2', img)
+                                        if cv2.waitKey(0) & 0xff == 27:
+                                            cv2.destroyAllWindows()
+                        else:
+                            if data8.get() == 1:
+                                file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                photo = cv2.imread(file_path)
+                                if file_path:
+                                    cv2.imshow('Window 1', photo)
+                                    img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                    circle = cv2.circle(img.copy(), (data4.get(), data5.get()), data6.get(), 255, -1)
+                                    img= cv2.bitwise_and(photo, photo, mask = circle)
+                                    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                                    gray = np.float32(gray)
+                                    dst = cv2.cornerHarris(gray, 5, 5, 0.08)
+                                    dst = cv2.dilate(dst, None)
+                                    img[dst > 0.01 * dst.max()] = [0, 0, 255]
+                                    cv2.imshow('Window 2', img)
+                                    if cv2.waitKey(0) & 0xff == 27:
+                                        cv2.destroyAllWindows()
+                            elif data8.get() == 2:
+                                file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                photo = cv2.imread(file_path)
+                                if file_path:
+                                    cv2.imshow('Window 1', photo)
+                                    img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                    circle = cv2.circle(img.copy(), (data4.get(), data5.get()), data6.get(), 255, -1)
+                                    img= cv2.bitwise_and(photo, photo, mask = circle)
+                                    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                                    corners = cv2.goodFeaturesToTrack(gray, 100, 0.01, 10)
+                                    corners = np.int0(corners)
+                                    for corner in corners:
+                                        x, y = corner.ravel()
+                                        cv2.circle(img, (x, y), 5, (255, 0, 0), -1)
+                                    cv2.imshow('Window 2', img)
+                                    if cv2.waitKey(0) & 0xff == 27:
+                                        cv2.destroyAllWindows()
+                            else:
+                                file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+                                photo = cv2.imread(file_path)
+                                if file_path:
+                                    cv2.imshow('Window 1', photo)
+                                    img  = np.zeros(photo.shape[:2], dtype='uint8')
+                                    circle = cv2.circle(img.copy(), (data4.get(), data5.get()), data6.get(), 255, -1)
+                                    img= cv2.bitwise_and(photo, photo, mask = circle)
+                                    cv2.imshow('Window 2', img)
+                                    if cv2.waitKey(0) & 0xff == 27:
+                                        cv2.destroyAllWindows()
+
+                    else:
+                        messagebox.showerror("Қате", "Мәліметтерді толық енгізіңіз!")
+                else:
+                    messagebox.showerror("Қате", "Мәліметтерді толық енгізіңіз!")
+            else:
+                messagebox.showerror("Қате", "Мәліметтерді дұрыс енгізіңіз!")
+        else:
+            messagebox.showerror("Қате", "Масканың түрін таңдаңыз!")
+    
+
+
+
+    l = Label(b,text="Масканың түрін таңдаңыз:", font=("Times New Roman", 12, "bold"))
+    l.place(x=50, y=120)
+    l1 = Label(b, text="X")
+    l1.place(x=132, y=70)
+    v= Radiobutton(b, text="Төртбұрыш", variable=data7, value=1, font=("Times New Roman", 12))
+    v.place(x=50, y=150)
+    v1= Radiobutton(b, text="Дөңгелек", variable=data7, value=2, font=("Times New Roman", 12))
+    v1.place(x=170, y=150)
+
+    l = Label(b,text="Детектор түрін таңдаңыз:", font=("Times New Roman", 12, "bold"))
+    l.place(x=50, y=370)
+    v2 = Radiobutton(b, text="Haris Детекторы", variable=data8, value=1, font=("Times New Roman", 12))
+    v2.place(x=50, y=400)
+    v3= Radiobutton(b, text="Shi-Tomasi Детекторы", variable=data8, value=2, font=("Times New Roman", 12))
+    v3.place(x=200, y=400)
+
+
+    def delete():
+        entry1.delete(0, END)
+        entry1.configure(state=DISABLED)
+        data.set(0)
+        entry2.delete(0, END)
+        entry2.configure(state=DISABLED)
+        data1.set(0)
+        entry3.delete(0, END)
+        entry3.configure(state=DISABLED)
+        data2.set(0)
+        entry4.delete(0, END)
+        entry4.configure(state=DISABLED)
+        data3.set(0)
+
+    def delete1():
+        entry5.delete(0, END)
+        entry5.configure(state=DISABLED)
+        data4.set(0)
+        entry6.delete(0, END)
+        entry6.configure(state=DISABLED)
+        data5.set(0)
+        entry7.delete(0, END)
+        entry7.configure(state=DISABLED)
+        data6.set(0)
+
+    def delete2():
+        combo3.delete(0, END)
+        combo3.configure(state=DISABLED)
+        data9.set(0)
+        combo4.delete(0, END)
+        combo4.configure(state=DISABLED)
+        data10.set(0)
+
+
+    entry1 = Entry(b, textvariable= data, width=5)
+    entry1.place(x=190, y=232)
+    entry1.configure(state=DISABLED)
+    def on_click(event):
+        entry1.configure(state=NORMAL)
+        entry1.delete(0, END)
+    entry1.bind("<Button-1>", on_click)
+    entry2 = Entry(b, textvariable= data1, width=5)
+    entry2.place(x=190, y=262)
+    entry2.configure(state=DISABLED)
+    def on_click(event):
+        entry2.configure(state=NORMAL)
+        entry2.delete(0, END)
+    entry2.bind("<Button-1>", on_click)
+    entry3 = Entry(b,textvariable=data2, width=5)
+    entry3.place(x=190, y=292)
+    entry3.configure(state=DISABLED)
+    def on_click(event):
+        entry3.configure(state=NORMAL)
+        entry3.delete(0, END)
+    entry3.bind("<Button-1>", on_click)
+    entry4 = Entry(b, textvariable=data3, width=5)
+    entry4.place(x=190, y=322)
+    entry4.configure(state=DISABLED)
+    def on_click(event):
+        entry4.configure(state=NORMAL)
+        entry4.delete(0, END)
+    entry4.bind("<Button-1>", on_click)
+    entry5 = Entry(b, textvariable= data4, width=5)
+    entry5.place(x=570, y=232)
+    entry5.configure(state=DISABLED)
+    def on_click(event):
+        entry5.configure(state=NORMAL)
+        entry5.delete(0, END)
+    entry5.bind("<Button-1>", on_click)
+    entry6 = Entry(b, textvariable= data5, width=5)
+    entry6.place(x=570, y=262)
+    entry6.configure(state=DISABLED)
+    def on_click(event):
+        entry6.configure(state=NORMAL)
+        entry6.delete(0, END)
+    entry6.bind("<Button-1>", on_click)
+    entry7 = Entry(b, textvariable= data6, width=5)
+    entry7.place(x=570, y=292)
+    entry7.configure(state=DISABLED)
+    def on_click(event):
+        entry7.configure(state=NORMAL)
+        entry7.delete(0, END)
+    entry7.bind("<Button-1>", on_click)
+
+
+    lbl = Label(b, text="Төртбұрыш масканың мәліметтерін енгізіңіз:", font=("Times New Roman", 12, "bold"))
+    lbl.place(x=50, y=200)    
+    lbl1 = Label(b, text="X1 мәнін енгізіңіз: ", font=("Times New Roman", 12))
+    lbl1.place(x=50, y=230)
+    lbl2 = Label(b, text="X2 мәнін енгізіңіз: ", font=("Times New Roman", 12))
+    lbl2.place(x=50, y=260)
+    lbl3 = Label(b, text="Y1 мәнін енгізіңіз: ", font=("Times New Roman", 12))
+    lbl3.place(x=50, y=290)
+    lbl4 = Label(b, text="Y2 мәнін енгізіңіз: ", font=("Times New Roman", 12))
+    lbl4.place(x=50, y=320)
+    lbl = Label(b, text="Дөңгелек масканың мәліметтерін енгізіңіз:", font=("Times New Roman", 12, "bold"))
+    lbl.place(x=440, y=200)   
+    lbl5 = Label(b, text="X мәнін енгізіңіз: ", font=("Times New Roman", 12))
+    lbl5.place(x=440, y=230)
+    lbl6 = Label(b, text="Y мәнін енгізіңіз: ", font=("Times New Roman", 12))
+    lbl6.place(x=440, y=260)
+    lbl7 = Label(b, text="R мәнін енгізіңіз: ", font=("Times New Roman", 12))
+    lbl7.place(x=440, y=290)
+    lbl8 = Label(b, text="Кескіннің өлшемін таңдаңыз:", font=("Times New Roman", 12, "bold"))
+    lbl8.place(x=50, y=40)
+
+    btn12 = Button(b, text ="Таңдау", activebackground="#555", border=6, bg = "white", fg="black", font=("Times New Roman", 12), command=button_press3)
+    btn12.place(x=600, y=530, width=100, height=40)      
+
+    def bttn5(x,y,text,bcolor,fcolor):
+        def on_enter(e):
+            btn7['background'] =bcolor
+            btn7['foreground'] =fcolor
+        def on_leave(e):
+            btn7['background'] =fcolor
+            btn7['foreground'] =bcolor
+            
+        btn7 = Button(b, width=8, height=1, text=text, border=0, fg=bcolor, bg=fcolor, activebackground=bcolor, activeforeground=fcolor, command=delete)
+        btn7.bind("<Enter>", on_enter)
+        btn7.bind("<Leave>", on_leave)
+        btn7.place(x=x, y=y)
+
+    bttn5(240,318,"Өшіру",'white', "black")
+
+    def bttn6(x,y,text,bcolor,fcolor):
+        def on_enter(e):
+            btn7['background'] =bcolor
+            btn7['foreground'] =fcolor
+        def on_leave(e):
+            btn7['background'] =fcolor
+            btn7['foreground'] =bcolor
+            
+        btn7 = Button(b, width=8, height=1, text=text, border=0, fg=bcolor, bg=fcolor, activebackground=bcolor, activeforeground=fcolor, command=delete1)
+        btn7.bind("<Enter>", on_enter)
+        btn7.bind("<Leave>", on_leave)
+        btn7.place(x=x, y=y)
+
+    bttn6(620,288,"Өшіру",'white', "black")
+
+    def bttn7(x,y,text,bcolor,fcolor):
+        def on_enter(e):
+            btn7['background'] =bcolor
+            btn7['foreground'] =fcolor
+        def on_leave(e):
+            btn7['background'] =fcolor
+            btn7['foreground'] =bcolor
+            
+        btn7 = Button(b, width=8, height=1, text=text, border=0, fg=bcolor, bg=fcolor, activebackground=bcolor, activeforeground=fcolor, command=delete2)
+        btn7.bind("<Enter>", on_enter)
+        btn7.bind("<Leave>", on_leave)
+        btn7.place(x=x, y=y)
+
+    bttn7(240,68,"Өшіру",'white', "black")
+
+
+    def exit4():
+        import time
+        for i in range(100):
+            time.sleep(0)
+        b.destroy()
+        main_window3()
+        
+    def bttn4(x,y,text,bcolor,fcolor):
+        def on_enter(e):
+            btn7['background'] =bcolor
+            btn7['foreground'] =fcolor
+
+        def on_leave(e):
+            btn7['background'] =fcolor
+            btn7['foreground'] =bcolor
+            
+        btn7 = Button(b, width=12, height=1, text=text, border=0, fg=bcolor, bg=fcolor, activebackground=bcolor, activeforeground=fcolor, command=exit4)
+        btn7.bind("<Enter>", on_enter)
+        btn7.bind("<Leave>", on_leave)
+        btn7.place(x=x, y=y)
+
+    bttn4(0,0,"Артқа",'white', "#141414")
+
+def button_press():
+    file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+    img = cv2.imread(file_path)
+    if file_path:
+        cv2.imshow('Window 1', img)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = np.float32(gray)
+        dst = cv2.cornerHarris(gray, 5, 5, 0.08)
+        dst = cv2.dilate(dst, None)
+        img[dst > 0.01 * dst.max()] = [0, 0, 255]
+        cv2.imshow('Window 2', img)
+        if cv2.waitKey(0) & 0xff == 27:
+            cv2.destroyAllWindows()
+
+def button_press1():
+    file_path = filedialog.askopenfilename(initialdir="/images", title="Select A File", filetypes=(("png files","*.png"),("all files", "*.*")))
+    img = cv2.imread(file_path)
+    if file_path:
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        if messagebox.askyesno("Обнаружение углов", "Хотите обнаружить углы?"):
+            cv2.imshow('Window 1', img)
+            corners = cv2.goodFeaturesToTrack(gray,100, 0.01, 10)
+            corners = np.int0(corners)
+            sum1 = 0
+            for i in corners:
+                x,y = i.ravel()
+                cv2.circle(img,(x,y),5, (255, 0, 0), -1)
+                sum1 += 1 
+            plt.imshow(img)
+            plt.show()
+        else:
+            if messagebox.askyesno("Обнаружение углов", "Хотите просто обработать изображение?"):
+                cv2.imshow('Window 1', img)
+                plt.imshow(img)
+                plt.show() 
+
+def button_press4():
+    #low_green = np.array([25, 52, 72])
+    #high_green = np.array([102, 255, 255])
+    low_orange = np.array([5, 50, 50])
+    high_orange = np.array([15, 255, 255])
+    cap = cv2.VideoCapture(0)
+    while True:
+        ret, frame = cap.read()
+        cv2.imshow('Window 1', frame)
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv, low_orange, high_orange)
+        cv2.imshow('Window 2', mask)
+        if cv2.waitKey(1) == ord('q'):
+            break
+    cap.release()
+    cv2.destroyAllWindows()
+
+def bar():
+    l4 = Label(w,text='Күте тұрыңыз...', fg='white', bg='#279794')
+    lst4 = ('Calibri (Body)',10)
+    l4.configure(font=lst4)
+    l4.place(x=0,y=210)
+
+    import time
+    r=0
+    for i in range(100):
+        progress['value']=r
+        w.update_idletasks()
+        time.sleep(0.01)
+        r=r+1
+    w.destroy()
+    main_window()
+
+progress.place(x=-10, y=235)
+
+Frame(w,width=427, height=241,bg='#249794').place(x=0,y=0)
+
+def bttn(x,y,text,bcolor,fcolor):
+
+    def on_enter(e):
+        b1['background'] =bcolor
+        b1['foreground'] =fcolor
+
+    def on_leave(e):
+        b1['background'] =fcolor
+        b1['foreground'] =bcolor
+        
+    b1 = Button(w, width=15, height=1, text=text, border=0, fg=bcolor, bg=fcolor, activebackground=bcolor, activeforeground=fcolor, command=bar)
+    b1.bind("<Enter>", on_enter)
+    b1.bind("<Leave>", on_leave)
+    b1.place(x=x, y=y)
+
+bttn(170,200,"Бастау",'#141414', "#249794")
+
+l1=Label(w,text="Бұрыштарды",fg='white',bg="#249794")
+lst1 = ('Calibri (Body)',18,'bold')
+l1.configure(font=lst1)
+l1.place(x=50,y=80)
+
+l2=Label(w,text="анықтау",fg='white',bg="#249794")
+lst2 = ('Calibri (Body)',18, 'bold')
+l2.configure(font=lst2)
+l2.place(x=220,y=80)
+
+l3=Label(w,text="Бағдарламалық жасақтамасы",fg='white',bg="#249794")
+lst3 = ('Calibri (Body)',13)
+l3.configure(font=lst3)
+l3.place(x=50,y=110)
+
+w.mainloop()
